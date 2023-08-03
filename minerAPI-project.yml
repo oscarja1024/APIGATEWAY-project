@@ -1,0 +1,1134 @@
+openapi: 3.0.3
+info:
+  title: API miner HearthStone data - OpenAPI 3.0
+  description: This is the api to acces the data from 
+                the HearthStone videogame, like card types, metadata,  the cards itself or decks.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: o.jimenez@edu.uah.es
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8080/miner
+tags:
+  - name: Metadata
+    description: Everything about the game metadata
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: Decks
+    description: Access to deck information
+    externalDocs:
+      description: Find out more about our store
+      url: http://swagger.io
+  - name: Cards
+    description: Operations about user
+paths:
+  /metadata:
+    get:
+      tags:
+        - Metadata
+      summary: Acces to the list of all existing metadata
+      description: Get All metadata information
+      operationId: getMetadata
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MetadataResponseDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /byCardListAndHero:
+    get:
+      tags:
+        - Decks
+      summary: Acces to the list of all cards and the hero of a deck
+      description: Get a deck by card list and hero id information
+      operationId: getMetadata
+      parameters:
+        - in: query
+          name: heroId
+          schema:
+            type: string
+          required: true
+      requestBody:
+          required: true
+          description: The list of card ids and hero id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardIdsDTO' 
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/DeckDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /byCode:
+    get:
+      tags:
+        - Decks
+      summary: Acces to the list of all cards and the hero of a deckcard list and hero premade by code
+      description: Get a premade game deck by code
+      operationId: getMetadata
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/DeckDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /byCardListAutoHero:
+    get:
+      tags:
+        - Decks
+      summary: Acces to the list of all cards and the hero of a deck
+      description: Get a deck by card list  information
+      operationId: getMetadata
+      requestBody:
+          required: true
+          description: The list of card ids
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardIdsDTO' 
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/DeckDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+  
+  /{cardId}:
+    get:
+      tags:
+        - Cards
+      summary: Acces to one cards by id
+      description: Get a card info
+      operationId: getOneCardById
+      parameters:
+        - in: path
+          name: cardId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOneCardResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetOneCardResponseDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /cards/{page}:
+    get:
+      tags:
+        - Cards
+      summary: Acces to all cards by id
+      description: Get all card info
+      operationId: getCards
+      parameters:
+        - in: path
+          name: page
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /sort:
+    get:
+      tags:
+        - Cards
+      summary: Acces to cards sort by a parameter
+      description: Get a card info
+      operationId: getOneCardById
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+            description: Valid values include manaCost:asc, manaCost:desc, attack:asc, attack:desc, health:asc, health:desc, class:asc ,class:desc, groupByClass:asc, groupByClass:desc, name:asc, and name:desc.
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOneCardResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetOneCardResponseDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /pageSize:
+    get:
+      tags:
+        - Cards
+      summary: Acces to cards indicating pageSize
+      description: Get all card info
+      operationId: getAllCards
+      parameters:
+        - in: query
+          name: pageSize
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /sortPageSize:
+    get:
+      tags:
+        - Cards
+      summary: Acces to cards indicating pageSize and method of sorting
+      description: Get all card info
+      operationId: getAllCards
+      parameters:
+        - in: query
+          name: pageSize
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: sort
+          schema:
+            type: string
+            description: Valid values include manaCost:asc, manaCost:desc, attack:asc, attack:desc, health:asc, health:desc, class:asc ,class:desc, groupByClass:asc, groupByClass:desc, name:asc, and name:desc.
+          required: true
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /mana/{manaCost}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by mana cost
+      parameters:
+        - name: manaCost
+          in: path
+          description: Mana cost of the cards
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+      
+  /attack/{attack}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by attack
+      description: Retrieves a list of cards based on the provided attack
+      parameters:
+        - name: attack
+          in: path
+          description: AttackDTO object containing attack details
+          required: true
+          schema:
+            type: object  # Replace this with the appropriate schema for AttackDTO
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /mana/{manaCost}/attack/{attack}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by mana cost and attack
+      parameters:
+        - name: manaCost
+          in: path
+          description: Mana cost of the cards
+          required: true
+          schema:
+            type: string
+        - name: attack
+          in: path
+          description: Attack value of the cards
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /type/{cardType}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by type
+      description: Retrieves a list of cards based on the provided card type
+      parameters:
+        - name: cardType
+          in: path
+          description: The type of the card
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /type/{cardType}/attack/{attack}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by type and attack
+      description: Retrieves a list of cards based on the provided card type and attack
+      parameters:
+        - name: cardType
+          in: path
+          description: The type of the card
+          required: true
+          schema:
+            type: string
+        - name: attack
+          in: path
+          description: AttackDTO object containing attack details
+          required: true
+          schema:
+            type: object  # Replace this with the appropriate schema for AttackDTO
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /type/{cardType}/mana/{manaCost}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by type and mana cost
+      description: Retrieves a list of cards based on the provided card type and mana cost
+      parameters:
+        - name: cardType
+          in: path
+          description: The type of the card
+          required: true
+          schema:
+            type: string
+        - name: manaCost
+          in: path
+          description: ManaDTO object containing mana cost details
+          required: true
+          schema:
+            type: object  # Replace this with the appropriate schema for ManaDTO
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /spellSchool/{spellSchool}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by spell school
+      description: Retrieves a list of cards based on the provided spell school
+      parameters:
+        - name: spellSchool
+          in: path
+          description: The spell school
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /cardSet/{cardSet}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by card set
+      description: Retrieves a list of cards based on the provided card set
+      parameters:
+        - name: cardSet
+          in: path
+          description: The card set
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /type/{cardType}/mana/{manaCost}/attack/{attack}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by type, mana cost, and attack
+      description: Retrieves a list of cards based on the provided card type, mana cost, and attack
+      parameters:
+        - name: cardType
+          in: path
+          description: The type of the card
+          required: true
+          schema:
+            type: string
+        - name: manaCost
+          in: path
+          description: ManaDTO object containing mana cost details
+          required: true
+          schema:
+            type: object  # Replace this with the appropriate schema for ManaDTO
+        - name: attack
+          in: path
+          description: AttackDTO object containing attack details
+          required: true
+          schema:
+            type: object  # Replace this with the appropriate schema for AttackDTO
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /health/{health}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by health
+      description: Retrieves a list of cards based on the provided health
+      parameters:
+        - name: health
+          in: path
+          description: HealthDTO object containing health details
+          required: true
+          schema:
+            type: object  # Replace this with the appropriate schema for HealthDTO
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+
+  /gameMode/{gameMode}:
+    get:
+      tags:
+        - Cards
+      summary: Get all cards by game mode
+      description: Retrieves a list of cards based on the provided game mode
+      parameters:
+        - name: gameMode
+          in: path
+          description: The game mode
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCardsResponseDTO'
+   
+components:
+  schemas:
+    TypeDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        gameModes:
+          type: array
+          items:
+            type: string
+
+    SpellSchoolDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+
+    SetGroupsDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        year:
+          type: string
+        svg:
+          type: string
+        cardSets:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        standard:
+          type: boolean
+        icon:
+          type: string
+
+    SetDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        collectibleCount:
+          type: string
+        collectibleRevealedCount:
+          type: string
+        nonCollectibleCount:
+          type: string
+        nonCollectibleRevealedCount:
+          type: string
+
+    RarityDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        craftingCost:
+          type: array
+          items:
+            type: string
+        dustValue:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+
+    MinionTypeDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        gameModes:
+          type: array
+          items:
+            type: string
+
+    MetadataResponseDTO:
+      type: object
+      properties:
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SetDTO'
+        setGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/SetGroupsDTO'
+        gameModes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameModeDTO'
+        arenaIds:
+          type: array
+          items:
+            type: string
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeDTO'
+        rarities:
+          type: array
+          items:
+            $ref: '#/components/schemas/RarityDTO'
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassDTO'
+        minionTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinionTypeDTO'
+        spellSchools:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpellSchoolDTO'
+        mercenaryRoles:
+          type: array
+          items:
+            $ref: '#/components/schemas/MercenaryRoleDTO'
+        mercenaryFactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MercenaryFactionDTO'
+        keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyWordDTO'
+        filterableFields:
+          type: array
+          items:
+            type: string
+        numericFields:
+          type: array
+          items:
+            type: string
+
+    MercenaryRoleDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+
+    MercenaryFactionDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string   
+
+    KeyWordDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        refText:
+          type: string
+        text:
+          type: string
+        gameModes:
+          type: array
+          items:
+            type: string
+
+    HeroDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        collectible:
+          type: string
+        slug:
+          type: string
+        classId:
+          type: string
+        multiClassIds:
+          type: array
+          items:
+            type: object
+        spellSchoolId:
+          type: string
+        cardTypeId:
+          type: string
+        cardSetId:
+          type: string
+        rarityId:
+          type: string
+        artistName:
+          type: string
+        manaCost:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        imageGold:
+          type: string
+        flavorText:
+          type: string
+        cropImage:
+          type: string
+        parentId:
+          type: string
+        childIds:
+          type: array
+          items:
+            type: string
+
+    GetOneCardResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        collectible:
+          type: string
+        slug:
+          type: string
+        classId:
+          type: string
+        multiClassIds:
+          type: array
+          items:
+            type: object
+        spellSchoolId:
+          type: string
+        cardTypeId:
+          type: string
+        cardSetId:
+          type: string
+        rarityId:
+          type: string
+        artistName:
+          type: string
+        health:
+          type: string
+        attack:
+          type: string
+        manaCost:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        imageGold:
+          type: string
+        flavorText:
+          type: string
+        text:
+          type: string
+        cropImage:
+          type: string
+        parentId:
+          type: string
+        keywordIds:
+          type: array
+          items:
+            type: string
+        duels:
+          $ref: '#/components/schemas/Duels'
+
+    Duels:
+      type: object
+      properties:
+        relevant:
+          type: boolean
+        constructed:
+          type: boolean
+      
+    GetCardsResponseDTO:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetOneCardResponseDTO'
+        cardCount:
+          type: integer
+        pageCount:
+          type: integer
+        page:
+          type: integer
+    
+    GameModeDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+      
+    DeckDTO:
+      type: object
+      properties:
+        deckCode:
+          type: string
+        version:
+          type: string
+        format:
+          type: string
+        hero:
+          $ref: '#/components/schemas/HeroDTO'
+        heroPower:
+          $ref: '#/components/schemas/HeroDTO'
+        class:
+          $ref: '#/components/schemas/ClassDTO'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetOneCardResponseDTO'
+        cardCount:
+          type: integer
+
+    ClassDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        cardId:
+          type: string
+        heroPowerCardId:
+          type: string
+        alternateHeroCardIds:
+          type: array
+          items:
+            type: string
+    
+    CardBacksResponseDTO:
+      type: object
+      properties:
+        cardBacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardBacksDTO'
+        cardCount:
+          type: integer
+        pageCount:
+          type: integer
+        page:
+          type: integer
+        
+    CardBacksDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        sortCategory:
+          type: string
+        text:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        slug:
+          type: string
+
+    BearerTokenResponseDTO:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        sub:
+          type: string
+
+    CardIdsDTO:
+      type: array
+      items: 
+          type: string
+          example: "5877"
+
+    MetadataRequest:
+      type: object
+      properties:
+        locale:
+          type: string
+
+    DeckRequestDTO:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        hero:
+          type: string
+        code:
+          type: string
+        
+    CardRequestDTO:
+      type: object
+      properties:
+        cardId:
+          type: string
+        locale:
+          type: string
+        page:
+          type: string
+        sort:
+          type: string
+        pageSize:
+          type: string
+        mana:
+          type: string
+        attack:
+          type: string
+        health:
+          type: string
+        type:
+          type: string
+        gameMode:
+          type: string
+        spellSchool:
+          type: string
+        set:
+          type: string
+
+    CardBackRequest:
+      type: object
+      properties:
+        idorSlug:
+          type: string
+        category:
+          type: string
+        page:
+          type: string
+        sort:
+          type: string
+
+    MinerDTO:
+      type: object
+      properties:
+        cardId:
+          type: string
+        cardIds:
+          type: array
+          items:
+            type: string
+        page:
+          type: string
+        params:
+          type: object
+          additionalProperties:
+            type: string

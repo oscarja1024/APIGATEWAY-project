@@ -1,0 +1,1080 @@
+openapi: 3.0.3
+info:
+  title: API miner HearthStone data - OpenAPI 3.0
+  description: |-
+    The api to acess the reports and information  generated for and by the user abot their parties in the game.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: o.jimenez@edu.uah.es
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8080/userData
+tags:
+  - name: filterMetadata
+    description: Method to filter the metadata of the game
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: gamesReports
+    description: Access to game report information
+    externalDocs:
+      description: Find out more about our store
+      url: http://swagger.io
+  - name: cardInformation
+    description: Operations about cards by the user
+  - name: deckInformation
+    description: Operations about decks
+paths:
+  /filter:
+    post:
+      tags:
+        - filterMetadata
+      summary: Update an existing pet
+      description: Update an existing pet by Id
+      operationId: updatePet
+      requestBody:
+        description: Update an existent pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterDTO'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/FilterDTO'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataResponseDTO'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MetadataResponseDTO'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+        '405':
+          description: Validation exception
+      security:
+        - petstore_auth:
+            - write:pets
+            - read:pets
+
+  /report/{gameId}/{userId}:
+    get:
+      tags:
+        - gamesReports
+      summary: Get game report
+      description: Retrieves the game report for a specific game and user
+      parameters:
+        - name: gameId
+          in: path
+          description: The ID of the game
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultGameDTO'
+
+  /report:
+    post:
+      tags:
+        - gamesReports
+      summary: Save game report
+      description: Saves the game report for a specific user
+      parameters:
+        - name: userId
+          in: query
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultGameDTO'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsertedId'
+
+  /compare/{cardId1}/{cardId2}:
+    get:
+      tags:
+        - cardInformation
+      summary: Compare two cards
+      description: Retrieves the comparison result between two cards
+      parameters:
+        - name: cardId1
+          in: path
+          description: The ID of the first card
+          required: true
+          schema:
+            type: string
+        - name: cardId2
+          in: path
+          description: The ID of the second card
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultCardDTO'
+
+  /favorites:
+    post:
+      tags:
+        - cardInformation
+      summary: Save favorite card
+      description: Saves a card as a favorite for a specific user
+      parameters:
+        - name: cardID
+          in: query
+          description: The ID of the card to save as a favorite
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal server error response
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /insert:
+    post:
+      tags:
+        - deckInformation
+      summary: Insert owned deck
+      description: Inserts an owned deck for a specific user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsertDeckRequest'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsertedId'
+
+  /get/{deckId}/{userId}:
+    get:
+      tags:
+        - deckInformation
+      summary: Get owned deck
+      description: Retrieves an owned deck for a specific deck ID and user ID
+      parameters:
+        - name: deckId
+          in: path
+          description: The ID of the deck to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGameDataResponse'
+
+  /insertReport:
+    post:
+      tags:
+        - deckInformation
+      summary: Insert deck report
+      description: Inserts a deck report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameUserDataRequest'
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsertedId'
+
+  /getReport/{deckId}/{userId}:
+    get:
+      tags:
+        - deckInformation
+      summary: Get deck data report
+      description: Retrieves deck data report for a specific deck ID and user ID
+      parameters:
+        - name: deckId
+          in: path
+          description: The ID of the deck to retrieve data report
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGameDataResponse'
+
+  /deleteFavCatd/{cardId}/{userId}:
+    delete:
+      tags:
+        - cardInformation
+      summary: Delete favorite card
+      description: Deletes a favorite card for a specific user
+      parameters:
+        - name: cardId
+          in: path
+          description: The ID of the card to delete from favorites
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedCount'
+
+  /deleteGameReport/{gameId}/{userId}:
+    delete:
+      tags:
+        - gamesReports
+      summary: Delete game report
+      description: Deletes a game report for a specific game ID and user ID
+      parameters:
+        - name: gameId
+          in: path
+          description: The ID of the game report to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedCount'
+
+  /deleteOwnedDeck/{deckId}/{userId}:
+    delete:
+      tags:
+        - deckInformation
+      summary: Delete owned deck
+      description: Deletes an owned deck for a specific deck ID and user ID
+      parameters:
+        - name: deckId
+          in: path
+          description: The ID of the deck to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedCount'
+
+  /deleteDeckReport/{deckId}/{userId}:
+    delete:
+      tags:
+        - deckInformation
+      summary: Delete deck data report
+      description: Deletes deck data report for a specific deck ID and user ID
+      parameters:
+        - name: deckId
+          in: path
+          description: The ID of the deck to delete data report
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedCount'
+   
+components:
+  schemas:
+    TypeDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        gameModes:
+          type: array
+          items:
+            type: string
+
+    SpellSchoolDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+
+    SetGroupsDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        year:
+          type: string
+        svg:
+          type: string
+        cardSets:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        standard:
+          type: boolean
+        icon:
+          type: string
+
+    SetDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        collectibleCount:
+          type: string
+        collectibleRevealedCount:
+          type: string
+        nonCollectibleCount:
+          type: string
+        nonCollectibleRevealedCount:
+          type: string
+
+    RarityDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        craftingCost:
+          type: array
+          items:
+            type: string
+        dustValue:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+
+    MinionTypeDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        gameModes:
+          type: array
+          items:
+            type: string
+
+    MetadataResponseDTO:
+      type: object
+      properties:
+        sets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SetDTO'
+        setGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/SetGroupsDTO'
+        gameModes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameModeDTO'
+        arenaIds:
+          type: array
+          items:
+            type: string
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeDTO'
+        rarities:
+          type: array
+          items:
+            $ref: '#/components/schemas/RarityDTO'
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassDTO'
+        minionTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinionTypeDTO'
+        spellSchools:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpellSchoolDTO'
+        mercenaryRoles:
+          type: array
+          items:
+            $ref: '#/components/schemas/MercenaryRoleDTO'
+        mercenaryFactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MercenaryFactionDTO'
+        keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyWordDTO'
+        filterableFields:
+          type: array
+          items:
+            type: string
+        numericFields:
+          type: array
+          items:
+            type: string
+
+    MercenaryRoleDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+
+    MercenaryFactionDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string   
+
+    KeyWordDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        refText:
+          type: string
+        text:
+          type: string
+        gameModes:
+          type: array
+          items:
+            type: string
+
+    HeroDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        collectible:
+          type: string
+        slug:
+          type: string
+        classId:
+          type: string
+        multiClassIds:
+          type: array
+          items:
+            type: object
+        spellSchoolId:
+          type: string
+        cardTypeId:
+          type: string
+        cardSetId:
+          type: string
+        rarityId:
+          type: string
+        artistName:
+          type: string
+        manaCost:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        imageGold:
+          type: string
+        flavorText:
+          type: string
+        cropImage:
+          type: string
+        parentId:
+          type: string
+        childIds:
+          type: array
+          items:
+            type: string
+
+    GetOneCardResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        collectible:
+          type: string
+        slug:
+          type: string
+        classId:
+          type: string
+        multiClassIds:
+          type: array
+          items:
+            type: object
+        spellSchoolId:
+          type: string
+        cardTypeId:
+          type: string
+        cardSetId:
+          type: string
+        rarityId:
+          type: string
+        artistName:
+          type: string
+        health:
+          type: string
+        attack:
+          type: string
+        manaCost:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        imageGold:
+          type: string
+        flavorText:
+          type: string
+        text:
+          type: string
+        cropImage:
+          type: string
+        parentId:
+          type: string
+        keywordIds:
+          type: array
+          items:
+            type: string
+        duels:
+          $ref: '#/components/schemas/Duels'
+
+    Duels:
+      type: object
+      properties:
+        relevant:
+          type: boolean
+        constructed:
+          type: boolean
+      
+    GetCardsResponseDTO:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetOneCardResponseDTO'
+        cardCount:
+          type: integer
+        pageCount:
+          type: integer
+        page:
+          type: integer
+    
+    GameModeDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+      
+    DeckDTO:
+      type: object
+      properties:
+        deckCode:
+          type: string
+        version:
+          type: string
+        format:
+          type: string
+        hero:
+          $ref: '#/components/schemas/HeroDTO'
+        heroPower:
+          $ref: '#/components/schemas/HeroDTO'
+        class:
+          $ref: '#/components/schemas/ClassDTO'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetOneCardResponseDTO'
+        cardCount:
+          type: integer
+
+    ClassDTO:
+      type: object
+      properties:
+        slug:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        cardId:
+          type: string
+        heroPowerCardId:
+          type: string
+        alternateHeroCardIds:
+          type: array
+          items:
+            type: string
+    
+    CardBacksResponseDTO:
+      type: object
+      properties:
+        cardBacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardBacksDTO'
+        cardCount:
+          type: integer
+        pageCount:
+          type: integer
+        page:
+          type: integer
+        
+    CardBacksDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        sortCategory:
+          type: string
+        text:
+          type: string
+        name:
+          type: string
+        image:
+          type: string
+        slug:
+          type: string
+
+    BearerTokenResponseDTO:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        sub:
+          type: string
+
+    CardIdsDTO:
+      type: array
+      items: 
+          type: string
+          example: "5877"
+
+    MetadataRequest:
+      type: object
+      properties:
+        locale:
+          type: string
+
+    DeckRequestDTO:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        hero:
+          type: string
+        code:
+          type: string
+        
+    CardRequestDTO:
+      type: object
+      properties:
+        cardId:
+          type: string
+        locale:
+          type: string
+        page:
+          type: string
+        sort:
+          type: string
+        pageSize:
+          type: string
+        mana:
+          type: string
+        attack:
+          type: string
+        health:
+          type: string
+        type:
+          type: string
+        gameMode:
+          type: string
+        spellSchool:
+          type: string
+        set:
+          type: string
+
+    CardBackRequest:
+      type: object
+      properties:
+        idorSlug:
+          type: string
+        category:
+          type: string
+        page:
+          type: string
+        sort:
+          type: string
+
+    MinerDTO:
+      type: object
+      properties:
+        cardId:
+          type: string
+        cardIds:
+          type: array
+          items:
+            type: string
+        page:
+          type: string
+        params:
+          type: object
+          additionalProperties:
+            type: string
+
+    FilterDTO:
+      type: object
+      required:
+        - "filterBy"
+      properties:
+        filterBy:
+          type: string
+          enum:
+            - "sets"
+            - "setGroups"
+            - "types"
+            - "rarities"
+            - "classes"
+            - "minionType"
+            - "keyWords"
+
+    ResultGameDTO:
+      type: object
+      properties:
+        result:
+          type: boolean
+        manaCostOfGame:
+          type: string
+        differentDamageInGame:
+          $ref: '#/components/schemas/DamageDTO'
+        numberOfRounds:
+          type: integer
+        cardsStolePerRound:
+          type: string
+        cardsStoleInGame:
+          type: string
+        healthHealToHero:
+          type: string
+        healthHealInGame:
+          type: string
+        heroHabilityUse:
+          type: string
+        cardsStoleToOpponent:
+          type: string
+        numberOfSpellsUsed:
+          type: string
+        userAnnotationsDTO:
+          $ref: '#/components/schemas/UserAnnotationsDTO'
+        deckPuntuationUtility:
+          $ref: '#/components/schemas/PuntuationDTO'
+        deckUsedInGame:
+          $ref: '#/components/schemas/DeckDTO'
+
+    UserAnnotationsDTO:
+      type: object
+      properties:
+        userAnnotations:
+          type: string
+
+    PuntuationDTO:
+      type: object
+      properties:
+        deckPoints:
+          type: integer
+
+
+    DamageDTO:
+      type: object
+      properties:
+        damageToHero:
+          type: string
+        damageToMinions:
+          type: string
+        DamageToHeroPerRound:
+          type: string
+        DamageToMinionsXRound:
+          type: string
+
+    InsertedId:
+      type: object
+      properties:
+        insertedId:
+          type: string
+
+
+    ResultCardDTO:
+      type: object
+      properties:
+        winnerResult:
+          type: string
+
+    InsertDeckRequest:
+      type: object
+      properties:
+        cardIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        heroId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        deckId:
+          type: string
+          format: uuid
+
+    UserGameDataResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        favDeck:
+          $ref: '#/components/schemas/DeckDTO'
+        favCard:
+          $ref: '#/components/schemas/GetOneCardResponseDTO'
+        cards:
+          $ref: '#/components/schemas/GetCardsResponseDTO'
+        deckReport:
+          $ref: '#/components/schemas/DeckReportDTO'
+        puntuation:
+          $ref: '#/components/schemas/PuntuationDTO'
+        resultGame:
+          $ref: '#/components/schemas/ResultGameDTO'
+
+    GameUserDataRequest:
+      type: object
+      properties:
+        dataSource:
+          type: string
+        dataBase:
+          type: string
+        collection:
+          type: string
+        document:
+          $ref: '#/components/schemas/Document'
+
+    Document:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        favDeck:
+          $ref: '#/components/schemas/DeckDTO'
+        favCard:
+          $ref: '#/components/schemas/GetOneCardResponseDTO'
+        deckReport:
+          $ref: '#/components/schemas/DeckReportDTO'
+        puntuation:
+          $ref: '#/components/schemas/PuntuationDTO'
+        resultGame:
+          $ref: '#/components/schemas/ResultGameDTO'
+        cardId:
+          type: string
+        cardId2:
+          type: string
+        winnerCardVsCard:
+          type: string
+
+    DeckReportDTO:
+      type: object
+      properties:
+        deckId:
+          type: string
+          format: uuid
+        manaMean:
+          type: string
+        attackMean:
+          type: string
+        puntuationDTO:
+          $ref: '#/components/schemas/PuntuationDTO'
+        spellsMean:
+          type: string
+        healthMean:
+          type: string
+        minionCount:
+          type: string
+        cardCount:
+          type: string
+        posibilityOfOpponentCardStole:
+          type: string
+        posibilityOfExtraCardStole:
+          type: string
+        healMean:
+          type: string
+        secretsCount:
+          type: string
+        cardCreation:
+          type: string
+        attackIncrease:
+          type: string
+
+    DeletedCount:
+      type: object
+      properties:
+        deletedCount:
+          type: string
