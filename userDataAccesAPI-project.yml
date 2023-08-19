@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: API miner HearthStone data - OpenAPI 3.0
+  title: API Data user Manager HearthStone data - OpenAPI 3.0
   description: |-
     The api to acess the reports and information  generated for and by the user abot their parties in the game.
   termsOfService: http://swagger.io/terms/
@@ -59,17 +59,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/MetadataResponseDTO'
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
+          description: Invalid filter supplied
         '405':
           description: Validation exception
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
 
-  /report/{gameId}/{userId}:
+  /report/{gameId}:
     get:
       tags:
         - gamesReports
@@ -83,13 +77,18 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: userId
-          in: path
-          description: The ID of the user
+        - in: header
+          name: sessionId
           required: true
           schema:
             type: string
             format: uuid
+          description: UUID session ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserEntity'
       responses:
         '200':
           description: Successful response
@@ -112,6 +111,13 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       requestBody:
         required: true
         content:
@@ -124,7 +130,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InsertedId'
+                $ref: '#/components/schemas/GameEntity'
 
   /compare/{cardId1}/{cardId2}:
     get:
@@ -145,6 +151,13 @@ paths:
           required: true
           schema:
             type: string
+        - in: header
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       responses:
         '200':
           description: Successful response
@@ -173,6 +186,13 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       responses:
         '200':
           description: Successful response
@@ -193,6 +213,14 @@ paths:
         - deckInformation
       summary: Insert owned deck
       description: Inserts an owned deck for a specific user
+      parameters:
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       requestBody:
         required: true
         content:
@@ -205,7 +233,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InsertedId'
+                $ref: '#/components/schemas/FavDeckEntity'
 
   /get/{deckId}/{userId}:
     get:
@@ -221,20 +249,25 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: userId
-          in: path
-          description: The ID of the user
+        - name: sessionId
+          in: header
           required: true
           schema:
             type: string
             format: uuid
+          description: UUID session ID
+      requestBody:
+        content:
+          application/json:
+                schema:
+                  $ref:  '#/components/schemas/UserEntity'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserGameDataResponse'
+                $ref: '#/components/schemas/FavDeckEntity'
 
   /insertReport:
     post:
@@ -242,30 +275,10 @@ paths:
         - deckInformation
       summary: Insert deck report
       description: Inserts a deck report
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GameUserDataRequest'
-      responses:
-        '201':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InsertedId'
-
-  /getReport/{deckId}/{userId}:
-    get:
-      tags:
-        - deckInformation
-      summary: Get deck data report
-      description: Retrieves deck data report for a specific deck ID and user ID
       parameters:
         - name: deckId
           in: path
-          description: The ID of the deck to retrieve data report
+          description: The ID of the deck to retrieve
           required: true
           schema:
             type: string
@@ -277,13 +290,49 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckEntity'
+
+  /getReport/{deckReportId}:
+    get:
+      tags:
+        - deckInformation
+      summary: Get deck data report
+      description: Retrieves deck data report for a specific deck ID and user ID
+      parameters:
+        - name: deckReportId
+          in: path
+          description: The ID of the deck to retrieve data report
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserGameDataResponse'
+                $ref: '#/components/schemas/DeckEntity'
 
   /deleteFavCatd/{cardId}/{userId}:
     delete:
@@ -305,13 +354,16 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeletedCount'
 
   /deleteGameReport/{gameId}/{userId}:
     delete:
@@ -334,13 +386,16 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeletedCount'
 
   /deleteOwnedDeck/{deckId}/{userId}:
     delete:
@@ -363,24 +418,34 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
       responses:
         '200':
           description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeletedCount'
 
-  /deleteDeckReport/{deckId}/{userId}:
+  /deleteDeckReport/{deckId}/{deckReportId}/{userId}:
     delete:
       tags:
         - deckInformation
       summary: Delete deck data report
       description: Deletes deck data report for a specific deck ID and user ID
       parameters:
+        - name: deckReportId
+          in: path
+          description: The ID of the deckReport to delete data report
+          required: true
+          schema:
+            type: string
+            format: uuid
         - name: deckId
           in: path
-          description: The ID of the deck to delete data report
+          description: The ID of the deck to delete
           required: true
           schema:
             type: string
@@ -392,13 +457,128 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sessionId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
+      responses:
+        '200':
+          description: Successful response
+
+  /game-reports:
+    get:
+      summary: Get game reports by user ID
+      parameters:
+        - in: header
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
+      requestBody: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeletedCount'
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameEntity'
+        '401':
+          description: Unauthorized
+
+  /ownedDecksByUser:
+    get:
+      summary: Get owned decks by user ID
+      parameters:
+        - in: header
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
+      requestBody: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FavDeckEntity'
+        '401':
+          description: Unauthorized
+
+  /deck-reports:
+    get:
+      summary: Get deck reports by user ID
+      parameters:
+        - in: header
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
+      requestBody: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeckEntity'
+        '401':
+          description: Unauthorized
+
+  /favorite-cards:
+    get:
+      summary: Get favorite cards by user ID
+      parameters:
+        - in: header
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID session ID
+      requestBody: 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardEntity'
+        '401':
+          description: Unauthorized
    
 components:
   schemas:
@@ -759,55 +939,7 @@ components:
           type: array
           items:
             type: string
-    
-    CardBacksResponseDTO:
-      type: object
-      properties:
-        cardBacks:
-          type: array
-          items:
-            $ref: '#/components/schemas/CardBacksDTO'
-        cardCount:
-          type: integer
-        pageCount:
-          type: integer
-        page:
-          type: integer
-        
-    CardBacksDTO:
-      type: object
-      properties:
-        id:
-          type: string
-        sortCategory:
-          type: string
-        text:
-          type: string
-        name:
-          type: string
-        image:
-          type: string
-        slug:
-          type: string
-
-    BearerTokenResponseDTO:
-      type: object
-      properties:
-        access_token:
-          type: string
-        token_type:
-          type: string
-        expires_in:
-          type: integer
-        sub:
-          type: string
-
-    CardIdsDTO:
-      type: array
-      items: 
-          type: string
-          example: "5877"
-
+            
     MetadataRequest:
       type: object
       properties:
@@ -852,18 +984,6 @@ components:
         spellSchool:
           type: string
         set:
-          type: string
-
-    CardBackRequest:
-      type: object
-      properties:
-        idorSlug:
-          type: string
-        category:
-          type: string
-        page:
-          type: string
-        sort:
           type: string
 
     MinerDTO:
@@ -955,13 +1075,6 @@ components:
         DamageToMinionsXRound:
           type: string
 
-    InsertedId:
-      type: object
-      properties:
-        insertedId:
-          type: string
-
-
     ResultCardDTO:
       type: object
       properties:
@@ -985,60 +1098,6 @@ components:
         deckId:
           type: string
           format: uuid
-
-    UserGameDataResponse:
-      type: object
-      properties:
-        userId:
-          type: string
-          format: uuid
-        favDeck:
-          $ref: '#/components/schemas/DeckDTO'
-        favCard:
-          $ref: '#/components/schemas/GetOneCardResponseDTO'
-        cards:
-          $ref: '#/components/schemas/GetCardsResponseDTO'
-        deckReport:
-          $ref: '#/components/schemas/DeckReportDTO'
-        puntuation:
-          $ref: '#/components/schemas/PuntuationDTO'
-        resultGame:
-          $ref: '#/components/schemas/ResultGameDTO'
-
-    GameUserDataRequest:
-      type: object
-      properties:
-        dataSource:
-          type: string
-        dataBase:
-          type: string
-        collection:
-          type: string
-        document:
-          $ref: '#/components/schemas/Document'
-
-    Document:
-      type: object
-      properties:
-        userId:
-          type: string
-          format: uuid
-        favDeck:
-          $ref: '#/components/schemas/DeckDTO'
-        favCard:
-          $ref: '#/components/schemas/GetOneCardResponseDTO'
-        deckReport:
-          $ref: '#/components/schemas/DeckReportDTO'
-        puntuation:
-          $ref: '#/components/schemas/PuntuationDTO'
-        resultGame:
-          $ref: '#/components/schemas/ResultGameDTO'
-        cardId:
-          type: string
-        cardId2:
-          type: string
-        winnerCardVsCard:
-          type: string
 
     DeckReportDTO:
       type: object
@@ -1073,8 +1132,145 @@ components:
         attackIncrease:
           type: string
 
-    DeletedCount:
+
+    UserEntity:
       type: object
       properties:
-        deletedCount:
+        userId:
           type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        passwd:
+          type: string
+
+    SessionEntity:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserEntity'
+
+    DeckEntity:
+      type: object
+      properties:
+        deckReportId:
+          type: string
+          format: uuid
+        deckId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        manaMean:
+          type: string
+        attackMean:
+          type: string
+        puntuation:
+          type: string
+        spellsMean:
+          type: string
+        healthMean:
+          type: string
+        minionCount:
+          type: string
+        cardCount:
+          type: string
+        posibilityOfOpponentCardStole:
+          type: string
+        posibilityOfExtraCardStole:
+          type: string
+        healMean:
+          type: string
+        secretsCount:
+          type: string
+        cardCreation:
+          type: string
+        attackIncrease:
+          type: string
+
+    GameEntity:
+      type: object
+      properties:
+        gameId:
+          type: string
+          format: uuid
+        result:
+          type: boolean
+        manaCostOfGame:
+          type: string
+        damageToHero:
+          type: string
+        damageToMinions:
+          type: string
+        DamageToHeroPerRound:
+          type: string
+        DamageToMinionsXRound:
+          type: string
+        numberOfRounds:
+          type: integer
+        cardsStolePerRound:
+          type: string
+        cardsStoleInGame:
+          type: string
+        healthHealToHero:
+          type: string
+        healthHealInGame:
+          type: string
+        heroHabilityUse:
+          type: string
+        cardsStoleToOpponent:
+          type: string
+        numberOfSpellsUsed:
+          type: string
+        userAnnotationsDTO:
+          type: string
+        deckPuntuationUtility:
+          type: string
+        deckUsedInGame:
+          type: string
+          format: uuid
+        deckCode:
+          type: string
+        version:
+          type: string
+        format:
+          type: string
+        heroId:
+          type: string
+        heroPower:
+          type: string
+        cardIds:
+          type: string
+        cardCount:
+          type: integer
+        fechaReport:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/UserEntity'
+
+    FavDeckEntity:
+      type: object
+      properties:
+        deckId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        cardIds:
+          type: string
+        heroId:
+          type: string
+
+    CardEntity:
+      type: object
+      properties:
+        idorSlug:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserEntity'
